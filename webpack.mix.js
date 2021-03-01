@@ -15,7 +15,15 @@ const path = require('path');
 mix.sourceMaps(false)
     .alias({
         '@': path.join(__dirname, 'resources/js'),
+        'nm': path.join(__dirname, 'node_modules'),
         vue$: path.join(__dirname, 'node_modules/vue/dist/vue.esm-bundler.js')
+    })
+    .options({
+        vue: {
+            compilerOptions: {
+                isCustomElement: (tag) => tag === 'trix-editor'
+            }
+        }
     })
     .disableNotifications()
     .js('resources/js/admin.js', 'theme/backend')

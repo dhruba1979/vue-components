@@ -1,5 +1,31 @@
 <template>
     <form v-if="show" class="grid grid-cols-1 gap-4"  @submit.prevent="createDemo">
+
+        <div>
+            <BaseTexteditor
+                label="Editor"
+                v-model="event.editor1"
+                :error="errors.editor1" />
+        </div>
+        <div>
+            <BaseTexteditor
+                label="Editor"
+                v-model="event.editor2"
+                :error="errors.editor2" />
+        </div>
+        <div>
+            <BaseTexteditor
+                label="Editor"
+                v-model="event.editor3"
+                :error="errors.editor3" />
+        </div>
+        <div>
+            <BaseTexteditor
+                label="Editor"
+                v-model="event.editor4"
+                :error="errors.editor4" />
+        </div>
+
         <div>
         <BaseCheckbox
             label="Checkbox"
@@ -78,7 +104,11 @@ export default {
                 class: '',
                 day1: '1/1/2020',
                 day2: '2/2/2020',
-                day3: '3/3/2020'
+                day3: '3/3/2020',
+                editor1: '<h1>1</h1>',
+                editor2: '<h1>2</h1>',
+                editor3: '<h1>3</h1>',
+                editor4: '<h1>4</h1>'
             },
             errors: {},
         }
@@ -96,6 +126,7 @@ export default {
             this.errors.type = 'error type';
             this.errors.class = 'error in class';
             this.errors.day = 'day is wrong';
+            this.errors.editor = 'editor error'
         }
     }
 }
