@@ -7,16 +7,17 @@
     <input
         type="text"
         ref="pickerRef"
+        v-bind="{ ...$attrs }"
         :id="uuid"
         :placeholder="label"
         :aria-describedby="error ? `${uuid}-error` : null"
         :aria-invalid="error ? true : false"
         :class="{ error }"
         :value="modelValue">
-    <BaseErrorMessage
+    <VErrorMessage
         v-if="error">
         {{ error }}
-    </BaseErrorMessage>
+    </VErrorMessage>
 </template>
 
 <script>

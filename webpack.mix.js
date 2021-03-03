@@ -12,7 +12,19 @@ const path = require('path');
  |
  */
 
-mix.sourceMaps(false)
+mix
+    .webpackConfig((webpack) => {
+        return {
+            target: ['web', 'es2017'],
+            plugins: [
+                new webpack.DefinePlugin({
+                    __VUE_OPTIONS_API__: true,
+                    __VUE_PROD_DEVTOOLS__: false
+                })
+            ]
+        }
+    })
+    .sourceMaps(false)
     .alias({
         '@': path.join(__dirname, 'resources/js'),
         'nm': path.join(__dirname, 'node_modules'),
@@ -26,9 +38,9 @@ mix.sourceMaps(false)
         }
     })
     .disableNotifications()
-    .js('resources/js/admin.js', 'theme/backend')
+    .js('resources/js/admin.js', 'theme/admin')
     .vue({ version: 3 });
-    // .postCss('resources/css/admin.css', 'theme/backend', [
+    // .postCss('resources/css/admin.css', 'theme/admin', [
     //    require('postcss-import'),
     //    require('tailwindcss'),
     //    require('autoprefixer'),

@@ -4,21 +4,28 @@
         :for="uuid">
         {{ label }}
     </label>
-    <input
+    <select
         v-bind="{
                  ...$attrs,
-                 onInput: updateValue
+                 onChange: updateValue
                  }"
-        :id="uuid"
         :value="modelValue"
-        :placeholder="label"
+        :id="uuid"
         :aria-describedby="error ? `${uuid}-error` : null"
         :aria-invalid="error ? true : false"
-        :class="{ error }"/>
-    <BaseErrorMessage
+        :class="{ error }" >
+        <option
+            v-for="option in options"
+            :value="option.value"
+            :key="option.value"
+            :selected="option.value === modelValue">
+        {{ option.label }}
+        </option>
+    </select>
+    <VErrorMessage
         v-if="error">
     {{ error }}
-    </BaseErrorMessage>
+    </VErrorMessage>
 </template>
 
 <script>
@@ -27,20 +34,23 @@ import SetupFormComponent from '@/features/setup-form-component';
 
 export default {
     props: {
+        options: {
+            type: Array,
+            required: true
+        },
         label: {
             type: String,
-            default: ''
+            default: '',
         },
         error: {
             type: String,
             default: ''
         },
         modelValue: {
-            type: [String, Number],
-            default: ''
-        },
+            type: [String, Number]
+        }
     },
-    setup (props, context) {
+    setup(props, context) {
         const { updateValue } = SetupFormComponent(props, context);
         const uuid = UniqueID().getID();
 
@@ -51,3 +61,6 @@ export default {
     }
 }
 </script>
+
+
+

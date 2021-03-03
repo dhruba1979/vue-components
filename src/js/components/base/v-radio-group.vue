@@ -4,17 +4,17 @@
         :key="option.value"
         :is="vertical ? 'div' : 'span'"
         :style="vertical ? '' : 'margin-right: 20px;'">
-    <BaseRadio
+    <VRadio
         :name="name"
         :label="option.label"
         :modelValue="modelValue"
         :value="option.value"
         @update:modelValue="$emit('update:modelValue', $event)" />
     </component>
-    <BaseErrorMessage
+    <VErrorMessage
         v-if="error">
     {{ error }}
-    </BaseErrorMessage>
+    </VErrorMessage>
 </template>
 
 <script>

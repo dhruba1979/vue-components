@@ -5,7 +5,7 @@ import { createApp } from 'vue';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 
-const app = createApp({});
+const adminApp = createApp({});
 const requireComponent = require.context(
     './components',
     true,
@@ -23,7 +23,7 @@ requireComponent.keys().forEach((fileName) => {
     );
 
     // console.log(fileName, componentName);
-    app.component(componentName, componentConfig.default || componentConfig);
+    adminApp.component(componentName, componentConfig.default || componentConfig);
 });
 
-app.mount('#app');
+adminApp.mount('#page');

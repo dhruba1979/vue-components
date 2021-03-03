@@ -1,7 +1,8 @@
 <template>
 
     <label
-        v-if="label">
+        v-if="label"
+        :for="uuid">
         {{ label }}
     </label>
 
@@ -17,10 +18,10 @@
         :input="uuid">
     </trix-editor>
 
-    <BaseErrorMessage
+    <VErrorMessage
         v-if="error">
         {{ error }}
-    </BaseErrorMessage>
+    </VErrorMessage>
 
 </template>
 <!-- <div class="trix-content">Stored content here</div> -->

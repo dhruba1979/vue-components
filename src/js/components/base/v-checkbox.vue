@@ -12,10 +12,10 @@
         v-if="label">
         {{ label }}
     </label>
-    <BaseErrorMessage
+    <VErrorMessage
         v-if="error">
     {{ error }}
-    </BaseErrorMessage>
+    </VErrorMessage>
 </template>
 
 <script>

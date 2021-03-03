@@ -1,133 +1,87 @@
 <template>
-    <form v-if="show" class="grid grid-cols-1 gap-4"  @submit.prevent="createDemo">
-
-        <div>
-            <BaseTexteditor
-                label="Editor"
-                v-model="event.editor1"
-                :error="errors.editor1" />
+<div v-if="images.length" class="grid grid-cols-5 gap-4 bg-gray-200 border border-gray-300 rounded-sm p-4">
+    <div v-for="image in images" :key="image.id" class="col-span-1">
+        <div class="flex flex-col items-center justify-between p-2 bg-white border rounded">
+            <img class="h-64" :ref="setItemRef">
+            <p class="text-capitalize mt-3">{{ image.name }}</p>
+            <p class="text-capitalize mt-3">{{ image.size }}</p>
+            <button class="bg-red-400 text-white px-2 py-1 mt-3" :data-index="image.id" v-on:click="deleteImage">Delete</button>
         </div>
-        <div>
-            <BaseTexteditor
-                label="Editor"
-                v-model="event.editor2"
-                :error="errors.editor2" />
-        </div>
-        <div>
-            <BaseTexteditor
-                label="Editor"
-                v-model="event.editor3"
-                :error="errors.editor3" />
-        </div>
-        <div>
-            <BaseTexteditor
-                label="Editor"
-                v-model="event.editor4"
-                :error="errors.editor4" />
-        </div>
-
-        <div>
-        <BaseCheckbox
-            label="Checkbox"
-            v-model="event.is_admin"
-            :error="errors.is_admin" />
-        </div>
-
-        <div>
-        <BaseDatepicker
-            label="the data 1"
-            v-model="event.day1"
-            :error="errors.day1" />
-        </div>
-
-        <div>
-        <BaseDatepicker
-            label="the data 2"
-            v-model="event.day2"
-            :error="errors.day2" />
-        </div>
-
-        <div>
-        <BaseDatepicker
-            label="the data 3"
-            v-model="event.day3"
-            :error="errors.day3" />
-        </div>
-
-        <div>
-        <BaseInput
-            label="Select a category"
-            v-model="event.category"
-            type="text"
-            :error="errors.category"/>
-        </div>
-        <div>
-        <BaseRadioGroup
-            v-model="event.type"
-            name="type"
-            :options="[
-                        { value: 1, label: 'Book' },
-                        { value: 2, label: 'TV' },
-                        { value: 3, label: 'VCR' }
-                        ]"
-            :error="errors.type" />
-        </div>
-        <div>
-        <BaseSelect
-            v-model="event.class"
-            name="class"
-            :options="[
-                       { value: 1, label: 'LKG' },
-                       { value: 2, label: 'UKG' },
-                       { value: 3, label: 'Nursery' },
-                       ]"
-            :error="errors.class" />
-        </div>
-        <BaseButton type="submit">Submit</BaseButton>
-        <BaseButton type="button" @click="doOK">OK</BaseButton>
-    </form>
-
-    <button @click="tog" type="button">Show</button>
-
-    <pre>{{ event }}</pre>
+    </div>
+</div>
+<div v-if="!images.length" class="col-span-1 bg-gray-200 border border-gray-300 rounded-sm p-10">
+    <p class="text-3xl font-semibold text-center">Upload Photo</p>
+    <p class="text-center uppercase text-red-500 mt-5 pt-5 border-t border-red-400">Maximum uploadable photo size is 16 MB</p>
+</div>
+<hr/>
+<div class="grid grid-cols-1 gap-4">
+    <input type="file" ref="picker" multiple v-on:change="renderImages" accept="image/*">
+    <v-button v-on:click="upload">Submit</v-button>
+</div>
 </template>
 <script>
+import UniqueID from '@/features/unique-id';
+import formatBytes from '@/features/format-bytes';
+
 export default {
-    name: 'Demo',
-    data () {
+    data() {
         return {
-            show: false,
-            event: {
-                category: '',
-                is_admin: null,
-                type: '',
-                class: '',
-                day1: '1/1/2020',
-                day2: '2/2/2020',
-                day3: '3/3/2020',
-                editor1: '<h1>1</h1>',
-                editor2: '<h1>2</h1>',
-                editor3: '<h1>3</h1>',
-                editor4: '<h1>4</h1>'
-            },
-            errors: {},
+            images: [],
+            imageRefs: [],
         }
     },
     methods: {
-        tog() {
-            this.show = !this.show;
+        setItemRef(el) {
+            if (el) {
+                this.imageRefs.push(el);
+            }
         },
-        doOK() {
-            this.errors = {};
+        beforeUpdate() {
+            this.imageRefs = [];
         },
-        createDemo() {
-            this.errors.category = 'error category';
-            this.errors.is_admin = 'error select admin';
-            this.errors.type = 'error type';
-            this.errors.class = 'error in class';
-            this.errors.day = 'day is wrong';
-            this.errors.editor = 'editor error'
+        deleteImage(event) {
+            const index = event.target.getAttribute('data-index');
+            const pos = this.images.findIndex((el) => el.id == index);
+            if (pos >= 0) {
+                this.images.splice(pos, 1);
+            }
+        },
+        upload() {
+            let formData = new FormData();
+            for(let i =0; i< this.images.length; i++) {
+                formData.append(`photos[]`, this.images[i].file);
+            }
+            axios({
+                method: 'POST',
+                url: `${app.uri}/upload`,
+                data: formData,
+                headers: {
+                    'content-type': 'multipart/form-data',
+                    'Accept': 'application/json',
+                }
+            })
+            .then((response) => console.log(response))
+            .catch((error) => console.log(error));
+        },
+        renderImages(event) {
+            let selectedFiles = event.target.files;
+            for (let i =0; i< selectedFiles.length; i++) {
+                const image = selectedFiles[i];
+                this.images.push({
+                    id: UniqueID().getID(),
+                    name: image.name,
+                    file: image,
+                    size: formatBytes(image.size),
+                });
+            }
+            for (let i = 0; i < this.images.length; i++) {
+                let reader = new FileReader();
+                reader.onload = (event) => {
+                    this.imageRefs[i].src = reader.result;
+                }
+                reader.readAsDataURL(this.images[i].file);
+            }
         }
     }
-}
+};
 </script>
